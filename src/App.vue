@@ -3,28 +3,66 @@ import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div id="app">
+    <!-- 首頁 -->
+    <HomePage v-if="page === 'home'" @start="goToInspectionPage" />
+
+    <!-- 驗屋選擇頁面 -->
+    <InspectionPage v-if="page === 'select'" @startFlow="goToFlowPage" @back="goToHomePage" />
+
+    <!-- 驗屋流程頁面 -->
+    <InspectionFlowPage v-if="page === 'flow'" @backToSelect="goToInspectionPage" />
+
+    <!-- 底部導航 -->
+    <BottomNav />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<script>
+import HomePage from './components/HomePage.vue';
+import InspectionPage from './components/InspectionPage.vue';
+import InspectionFlowPage from './components/InspectionFlowPage.vue';
+import BottomNav from './components/BottomNav.vue';
+
+export default {
+  name: 'App',
+  components: {
+    HomePage,
+    InspectionPage,
+    InspectionFlowPage,
+    BottomNav
+  },
+  data() {
+    return {
+      page: 'home'
+    }
+  },
+  methods: {
+    goToHomePage() {
+      this.page = 'home';
+    },
+    goToInspectionPage() {
+      this.page = 'select';
+    },
+    goToFlowPage() {
+      this.page = 'flow';
+    }
+  },
+  mounted() {
+    // PWA 註冊
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✅ 安熙驗屋APP 註冊成功'))
+        .catch(err => console.error('❌ 註冊失敗:', err));
+    }
+  }
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+</script>
+
+<style>
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background-color: #f4f6f8;
+  padding-bottom: 5rem;
 }
 </style>
